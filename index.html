@@ -1,10 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>hello world</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>The International 10 :: Monte Carlo Probabilities</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" type="image/x-ico" href="/favicon.ico"/>
+    <link rel="stylesheet" href="/application.css"/>
 </head>
 <body>
+<div class="container-lg" style="margin-top: 3em; margin-left: 5%; margin-right: 5%">
 
+    <script type="text/javascript" src="application.js"></script>
+    <div style="text-align: center; width: 100%; display: inline-block;">
+        <h3>The International 2021 - Monte Carlo Simulations</h3><br>
+        <h6>last updated at: <span id="updated-at"></span></h6>
+        <br>
+        <div id="table-wrapper">
+            <table id="table-outcomes"
+                   class="table table-dark table-sm text-center"
+                   data-toggle="table"
+                   id="ability-stats"
+                   data-sortable="true"
+                   data-sort-name="pick-pos"
+                   data-sort-order="asc"
+                   data-search="true"
+            >
+                <thead>
+                <tr>
+                    <th data-field="team" data-formatter="teamFormatter">Logo</th>
+                    <th data-field="team" data-formatter="teamNameFormatter" data-sortable="true">Name</th>
+                    <th data-field="_1st" data-formatter="percentFormatter" data-cell-style="gradientStyler1" data-sortable="true">1st</th>
+                    <th data-field="_2nd" data-formatter="percentFormatter" data-cell-style="gradientStyler1" data-sortable="true">2nd</th>
+                    <th data-field="_3rd" data-formatter="percentFormatter" data-cell-style="gradientStyler1" data-sortable="true">3rd</th>
+                    <th data-field="_4th" data-formatter="percentFormatter" data-cell-style="gradientStyler1" data-sortable="true">4th</th>
+                    <th data-field="_5-6th" data-formatter="percentFormatter" data-cell-style="gradientStyler2" data-sortable="true">5-6th</th>
+                    <th data-field="_7-8th" data-formatter="percentFormatter" data-cell-style="gradientStyler2" data-sortable="true">7-8th</th>
+                    <th data-field="_9-12th" data-formatter="percentFormatter" data-cell-style="gradientStyler4" data-sortable="true">9-12th</th>
+                    <th data-field="_13-16th" data-formatter="percentFormatter" data-cell-style="gradientStyler4" data-sortable="true">13-16th</th>
+                    <th data-field="_17-18th" data-formatter="percentFormatter" data-cell-style="gradientStyler2" data-sortable="true">17-18th</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="graphs">
+            <div id="towin" style="margin-top: 2.5em"></div>
+            <div id="expected_earnings" style="margin-top: 2.5em"></div>
+            <div id="region_winner" style="margin-top: 2.5em"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    function teamFormatter(value, row) {
+        let logo = "https://cdn.datdota.com/images/" + row.logo_id + ".png";
+        let alt = row.name;
+        return "<img src=\"" + logo + "\" alt=\"" + alt + "\" width=\"60\" height=\"36\">";
+    }
+
+    function teamNameFormatter(value, row) {
+        let url = "https://www.datdota.com/teams/" + row.datdota_id;
+        return "<a href=\"" + url + "\" target=\"_blank\" rel=\"noreferrer\">" + row.name + "</a>";
+    }
+
+    function percentFormatter(value, row) {
+        return (Math.round(value * 10000) / 100).toFixed(2) + "%";
+    }
+
+    function gradientStyler1(value, row, index) {
+        return gradientStyler(value, row, index, 0.125);
+    }
+
+    function gradientStyler2(value, row, index) {
+        return gradientStyler(value, row, index, 0.25);
+    }
+
+    function gradientStyler4(value, row, index) {
+        return gradientStyler(value, row, index, 0.40);
+    }
+
+    function gradientStyler(value, row, index, upper) {
+        let norm = 20 * (value / upper);
+        let category = 100 - (5 * Math.min(20, Math.max(0, Math.round(norm))));
+        return {
+            classes: 'gradient_' + category,
+            css: {
+                'color': 'black',
+            }
+        }
+    }
+
+    $(document).ready(function () {
+
+        const prize_pool = 40_018_195;
+        const prize_percent = {
+            '1st': 0.455,
+            '2nd': 0.13,
+            '3rd': 0.09,
+            '4th': 0.06,
+            '5-6th': 0.035,
+            '7-8th': 0.025,
+            '9-12th': 0.02,
+            '13-16th': 0.015,
+            '17-18th': 0.0025
+        };
+
+        const regions = ['cn', 'sa', 'sea', 'eeu', 'weu', 'na'];
+        let team_region = {};
+
+        let team_map = {};
+        let region_data = {};
+        let table_data = [];
+        let updated_at = '';
+
+        $.getJSON("./data/index.json?t=" + Date.now(), function (_idx) {
+            let num_preds = _idx['predictions'].length
+
+            console.log("Loading " + num_preds + " predictions.");
+
+            regions.forEach(function (r) {
+                region_data[r] = Array(num_preds).fill(0);
+            });
+
+            _idx['teams'].forEach(function (t) {
+                let team_name = t['name'];
+                team_map[team_name] = t;
+                team_map[team_name].to_win = Array(num_preds).fill(0);
+                team_map[team_name].expected_earnings = Array(num_preds).fill(0);
+                team_region[team_name] = t['region'];
+            });
+
+            let togo = num_preds; // counter for how many async tasks must finish before rendering
+
+            _idx['predictions'].forEach(function (prediction_file, i) {
+                $.getJSON("./data/" + prediction_file + "?t=" + Date.now(), function (prediction) {
+                    // team_map[p['team_outcomes']['1st']
+                    Object.keys(prediction['team_outcomes']).forEach(function (tn) {
+
+                        // update the chance to win plots, the region winner plots, and the $ plots.
+                        let chance_to_win = (prediction['team_outcomes'][tn]['1st'] / prediction['iterations']);
+                        let region_of_winner = team_region[tn];
+
+                        region_data[region_of_winner][i] += chance_to_win;
+                        team_map[tn].to_win[i] = chance_to_win;
+
+                        let dollars = 0.0;
+                        for (const [place, percent] of Object.entries(prize_percent)) {
+                            let probability = prediction['team_outcomes'][tn][place] / prediction['iterations'];
+                            dollars += (prize_pool * percent * probability)
+                        }
+                        team_map[tn]['expected_earnings'][i] = dollars | 0;
+                    });
+
+                    // last prediction generates table data
+                    if ((i + 1) === num_preds) {
+
+                        // set last-updated time
+                        updated_at = prediction['updated'];
+
+                        _idx['teams'].forEach(function (t) {
+                            let blob = {};
+                            ['name', 'tag', 'datdota_id', 'logo_id'].forEach(function (field) {
+                                blob[field] = t[field];
+                            });
+
+                            Object.keys(prize_percent).forEach(function (place) {
+                                blob["_" + place] = (prediction['team_outcomes'][t.name][place] / prediction['iterations']);
+                            })
+
+                            table_data.push(blob);
+                        })
+                    }
+
+                    togo -= 1;
+                    // once we've got all the prediction data, let's render it
+                    if (togo === 0) {
+                        set_updated_at(updated_at);
+                        render_towin_graph(team_map);
+                        render_earnings_graph(team_map);
+                        render_region_winner_graph(region_data);
+                        render_outcomes_table(table_data);
+                    }
+                });
+            });
+        });
+
+        function set_updated_at(updated_at) {
+            $('#updated-at').text(updated_at + ' UTC');
+        }
+
+        function render_outcomes_table(table_data) {
+            $('#table-outcomes').bootstrapTable('load', table_data);
+        }
+
+        function render_towin_graph(team_map) {
+            let to_win_data = []
+            Object.keys(team_map).forEach(function (team_name) {
+                to_win_data.push({
+                    'name': team_name,
+                    'data': team_map[team_name]['to_win'].map(p => (100.0 * p))
+                });
+            });
+
+            // Graph to-win data
+            let to_win = Highcharts.chart('towin', {
+
+                title: {
+                    text: 'Team Chances to win The International 2021'
+                },
+                yAxis: {
+                    labels: {
+                        format: '{value}%'
+                    },
+                    title: {
+                        text: ''
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                xAxis: {
+                    minTickInterval: 1
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                        pointStart: 1
+                    }
+                },
+                tooltip: {
+                    shared: true,
+                    formatter: function () {
+                        let points = this.points;
+                        points.sort((i, j) => (i.y > j.y ? 1 : -1)).reverse();
+                        let html = points.length ? '<span style="font-size: 10px">' + points[0].key + '</span><br/>' : '';
+
+                        for (let index = 0; index < points.length; index++) {
+                            html += '<span style="color:' + points[index].series.color + '">\u25CF</span> ' + points[index].series.name + ': <b>' + (points[index].y).toFixed(2) + ' %</b><br/>';
+                        }
+                        return html;
+                    }
+                },
+                series: to_win_data,
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+            });
+        }
+
+        function render_region_winner_graph(region_data) {
+
+            let processed_region_data = [];
+
+            let pretty_regions = {
+                'cn': 'China',
+                'na': 'North America',
+                'sa': 'South America',
+                'sea': 'South-East Asia',
+                'weu': 'Western Europe',
+                'eeu': 'Eastern Europe'
+            };
+
+            Object.keys(region_data).forEach(function (region) {
+                processed_region_data.push({
+                    'name': pretty_regions[region],
+                    'data': region_data[region].map(p => (100.0 * p))
+                });
+            });
+
+            // Graph to-win data
+            let region_winner = Highcharts.chart('region_winner', {
+
+                title: {
+                    text: 'Regional Chances to win The International 2021'
+                },
+                yAxis: {
+                    labels: {
+                        format: '{value}%'
+                    },
+                    title: {
+                        text: ''
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                xAxis: {
+                    minTickInterval: 1
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                        pointStart: 1
+                    }
+                },
+                tooltip: {
+                    shared: true,
+                    formatter: function () {
+                        let points = this.points;
+                        points.sort((i, j) => (i.y > j.y ? 1 : -1)).reverse();
+                        let html = points.length ? '<span style="font-size: 10px">' + points[0].key + '</span><br/>' : '';
+
+                        for (let index = 0; index < points.length; index++) {
+                            html += '<span style="color:' + points[index].series.color + '">\u25CF</span> ' + points[index].series.name + ': <b>' + (points[index].y).toFixed(2) + ' %</b><br/>';
+                        }
+                        return html;
+                    }
+                },
+                series: processed_region_data,
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+            });
+        }
+
+
+        function render_earnings_graph(team_map) {
+            let to_win_data = []
+            Object.keys(team_map).forEach(function (team_name) {
+                to_win_data.push({
+                    'name': team_name,
+                    'data': team_map[team_name]['expected_earnings']
+                });
+            });
+
+            // Graph to-win data
+            let earnings = Highcharts.chart('expected_earnings', {
+
+                title: {
+                    text: 'Expected Earnings (USD)'
+                },
+                yAxis: {
+                    labels: {
+                        format: '${value}'
+                    },
+                    title: {
+                        text: ''
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                xAxis: {
+                    minTickInterval: 1
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle'
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                        pointStart: 1
+                    }
+                },
+                tooltip: {
+                    shared: true,
+                    formatter: function () {
+                        let points = this.points;
+                        points.sort((i, j) => (i.y > j.y ? 1 : -1)).reverse();
+                        let html = points.length ? '<span style="font-size: 10px">' + points[0].key + '</span><br/>' : '';
+
+                        for (let index = 0; index < points.length; index++) {
+                            html += '<span style="color:' + points[index].series.color + '">\u25CF</span> ' + points[index].series.name + ': <b>$' + points[index].y.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' </b><br/>';
+                        }
+                        return html;
+                    }
+                },
+                series: to_win_data,
+
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            }
+                        }
+                    }]
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
