@@ -3,10 +3,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Content-Security-Policy" content="Content-Security-Policy: default-src 'self'"/>
     <title>The International 10 :: Monte Carlo Probabilities</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="icon" type="image/x-ico" href="/favicon.ico"/>
-    <link rel="stylesheet" href="/application.css"/>
+    <link rel="stylesheet" href="application.css"/>
 </head>
 <body>
 <div class="container-lg" style="margin-top: 3em; margin-left: 5%; margin-right: 5%">
@@ -115,7 +116,7 @@
         let table_data = [];
         let updated_at = '';
 
-        $.getJSON("./data/index.json?t=" + Date.now(), function (_idx) {
+        $.getJSON("data/index.json?t=" + Date.now(), function (_idx) {
             let num_preds = _idx['predictions'].length
 
             console.log("Loading " + num_preds + " predictions.");
@@ -135,7 +136,7 @@
             let togo = num_preds; // counter for how many async tasks must finish before rendering
 
             _idx['predictions'].forEach(function (prediction_file, i) {
-                $.getJSON("./data/" + prediction_file + "?t=" + Date.now(), function (prediction) {
+                $.getJSON("data/" + prediction_file + "?t=" + Date.now(), function (prediction) {
                     // team_map[p['team_outcomes']['1st']
                     Object.keys(prediction['team_outcomes']).forEach(function (tn) {
 
