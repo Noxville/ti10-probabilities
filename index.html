@@ -15,7 +15,7 @@
 
     <script type="text/javascript" src="application.js"></script>
     <div class="row justify-content-center">
-        <h3>The International 2021 - Monte Carlo Simulations</h3>
+        <h2>The International 2021 - Monte Carlo Simulations</h2>
     </div>
     <div class="row justify-content-center">
         <h6>last updated at: <span id="updated-at"></span></h6>
@@ -70,26 +70,29 @@
             </table>
         </div>
     </div>
+    <br>
+    <br>
     <div class="row" id="groups">
         <div class="col-6 table-responsive">
+            <span class="row justify-content-center"><h2>Group A</h2></span>
             <table id="group-a"
                    class="table table-dark table-sm text-center"
                    data-toggle="table"
                    data-sortable="true"
-                   data-sort-name="pick-pos"
-                   data-sort-order="asc"
+                   data-sort-name="_wb"
+                   data-sort-order="desc"
             >
                 <thead>
                 <tr>
                     <th data-field="team" data-formatter="teamFormatter">Logo</th>
                     <th data-field="team" data-formatter="teamNameFormatter" data-sortable="true">Name</th>
-                    <th data-field="_wb" data-formatter="percentFormatter" data-cell-style="gradientStyler1"
+                    <th data-field="_wb" data-formatter="percentFormatter" data-cell-style="gradientStyler4"
                         data-sortable="true">Goes to UB
                     </th>
-                    <th data-field="_lb" data-formatter="percentFormatter" data-cell-style="gradientStyler1"
+                    <th data-field="_lb" data-formatter="percentFormatter" data-cell-style="gradientStyler4"
                         data-sortable="true">Goes to LB
                     </th>
-                    <th data-field="_elim" data-formatter="percentFormatter" data-cell-style="gradientStyler1"
+                    <th data-field="_elim" data-formatter="percentFormatter" data-cell-style="gradientStyler4"
                         data-sortable="true">Eliminated
                     </th>
                 </tr>
@@ -97,24 +100,25 @@
             </table>
         </div>
         <div class="col-6 table-responsive">
+            <span class="row justify-content-center"><h2>Group B</h2></span>
             <table id="group-b"
                    class="table table-dark table-sm text-center"
                    data-toggle="table"
                    data-sortable="true"
-                   data-sort-name="pick-pos"
-                   data-sort-order="asc"
+                   data-sort-name="_wb"
+                   data-sort-order="desc"
             >
                 <thead>
                 <tr>
                     <th data-field="team" data-formatter="teamFormatter">Logo</th>
                     <th data-field="team" data-formatter="teamNameFormatter" data-sortable="true">Name</th>
-                    <th data-field="_wb" data-formatter="percentFormatter" data-cell-style="gradientStyler1"
+                    <th data-field="_wb" data-formatter="percentFormatter" data-cell-style="gradientStyler4"
                         data-sortable="true">Goes to UB
                     </th>
-                    <th data-field="_lb" data-formatter="percentFormatter" data-cell-style="gradientStyler1"
+                    <th data-field="_lb" data-formatter="percentFormatter" data-cell-style="gradientStyler4"
                         data-sortable="true">Goes to LB
                     </th>
-                    <th data-field="_elim" data-formatter="percentFormatter" data-cell-style="gradientStyler1"
+                    <th data-field="_elim" data-formatter="percentFormatter" data-cell-style="gradientStyler4"
                         data-sortable="true">Eliminated
                     </th>
                 </tr>
@@ -261,25 +265,33 @@
 
                         Object.keys(prediction['team_outcomes']).forEach(function (tn) {
                             if ('gr_a_wb' in prediction['team_outcomes'][tn]) {
+                                let tot = prediction['team_outcomes'][tn]['gr_a_wb'] +
+                                    prediction['team_outcomes'][tn]['gr_a_lb'] +
+                                    prediction['team_outcomes'][tn]['gr_a_elim']
+
                                 gr_a.push({
                                     'name': team_map[tn].name,
                                     'tag': team_map[tn].tag,
                                     'datdota_id': team_map[tn].datdota_id,
                                     'logo_id': team_map[tn].logo_id,
-                                    '_wb': prediction['team_outcomes'][tn]['gr_a_wb'] / prediction['iterations'],
-                                    '_lb': prediction['team_outcomes'][tn]['gr_a_lb'] / prediction['iterations'],
-                                    '_elim': prediction['team_outcomes'][tn]['gr_a_elim'] / prediction['iterations'],
+                                    '_wb': prediction['team_outcomes'][tn]['gr_a_wb'] / tot,
+                                    '_lb': prediction['team_outcomes'][tn]['gr_a_lb'] / tot,
+                                    '_elim': prediction['team_outcomes'][tn]['gr_a_elim'] / tot
                                 });
                             }
                             if ('gr_b_wb' in prediction['team_outcomes'][tn]) {
+                                let tot = prediction['team_outcomes'][tn]['gr_b_wb'] +
+                                    prediction['team_outcomes'][tn]['gr_b_lb'] +
+                                    prediction['team_outcomes'][tn]['gr_b_elim']
+
                                 gr_b.push({
                                     'name': team_map[tn].name,
                                     'tag': team_map[tn].tag,
                                     'datdota_id': team_map[tn].datdota_id,
                                     'logo_id': team_map[tn].logo_id,
-                                    '_wb': prediction['team_outcomes'][tn]['gr_b_wb'] / prediction['iterations'],
-                                    '_lb': prediction['team_outcomes'][tn]['gr_b_lb'] / prediction['iterations'],
-                                    '_elim': prediction['team_outcomes'][tn]['gr_b_elim'] / prediction['iterations'],
+                                    '_wb': prediction['team_outcomes'][tn]['gr_b_wb'] / tot,
+                                    '_lb': prediction['team_outcomes'][tn]['gr_b_lb'] / tot,
+                                    '_elim': prediction['team_outcomes'][tn]['gr_b_elim'] / tot
                                 });
                             }
                         });
