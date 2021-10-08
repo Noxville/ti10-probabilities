@@ -1,1 +1,144 @@
-{"predictions": ["0.json", "1.json", "2.json", "3.json", "4.json", "5.json", "6.json", "7.json", "8.json", "9.json", "10.json", "11.json"], "teams": [{"name": "PSG.LGD", "tag": "PSG.LGD", "datdota_id": 15, "logo_id": "1768194395980560504", "region": "cn"}, {"name": "Evil Geniuses", "tag": "EG", "datdota_id": 39, "logo_id": "1018322454570182183", "region": "na"}, {"name": "Team Secret", "tag": "Secret", "datdota_id": 1838315, "logo_id": "987883915862592200", "region": "weu"}, {"name": "Vici Gaming", "tag": "VG", "datdota_id": 726228, "logo_id": "845963870798027729", "region": "cn"}, {"name": "Virtus.pro", "tag": "VP", "datdota_id": 1883502, "logo_id": "1817743268965791080", "region": "eeu"}, {"name": "Elephant", "tag": "Elephant", "datdota_id": 8204512, "logo_id": "1660101892780174189", "region": "cn"}, {"name": "Team Aster", "tag": "Aster", "datdota_id": 6209166, "logo_id": "1001430487518930631", "region": "cn"}, {"name": "INVICTUS GAMING", "tag": "iG", "datdota_id": 5, "logo_id": "975479762873971573", "region": "cn"}, {"name": "Team Spirit", "tag": "TSpirit", "datdota_id": 7119388, "logo_id": "1773822957617535601", "region": "eeu"}, {"name": "OG", "tag": "OG", "datdota_id": 2586976, "logo_id": "862855679982708969", "region": "weu"}, {"name": "Quincy Crew", "tag": "QCY", "datdota_id": 7390454, "logo_id": "1673617129954032824", "region": "na"}, {"name": "Undying", "tag": "UND", "datdota_id": 8260983, "logo_id": "1692775701318704753", "region": "na"}, {"name": "T1", "tag": "T1", "datdota_id": 8214850, "logo_id": "1658977260140178019", "region": "sea"}, {"name": "Alliance", "tag": "Alliance", "datdota_id": 111474, "logo_id": "255967725890131816", "region": "weu"}, {"name": "beastcoast", "tag": "bc", "datdota_id": 8254400, "logo_id": "1664609440937553639", "region": "sa"}, {"name": "Fnatic", "tag": "Fnatic", "datdota_id": 350190, "logo_id": "772866954983282781", "region": "sea"}, {"name": "Thunder Predator", "tag": "ThunderP", "datdota_id": 7391077, "logo_id": "1684898053518612571", "region": "sa"}, {"name": "SG esports", "tag": "SG", "datdota_id": 8255756, "logo_id": "1662356550778267512", "region": "sa"}]}
+{
+  "predictions": [
+    "0.json",
+    "1.json",
+    "2.json",
+    "3.json",
+    "4.json",
+    "5.json",
+    "6.json",
+    "7.json",
+    "8.json",
+    "9.json",
+    "10.json",
+    "11.json"
+  ],
+  "teams": [
+    {
+      "name": "PSG.LGD",
+      "tag": "PSG.LGD",
+      "datdota_id": 15,
+      "logo_id": "1768194395980560504",
+      "region": "cn"
+    },
+    {
+      "name": "Evil Geniuses",
+      "tag": "EG",
+      "datdota_id": 39,
+      "logo_id": "1018322454570182183",
+      "region": "na"
+    },
+    {
+      "name": "Team Secret",
+      "tag": "Secret",
+      "datdota_id": 1838315,
+      "logo_id": "987883915862592200",
+      "region": "weu"
+    },
+    {
+      "name": "Vici Gaming",
+      "tag": "VG",
+      "datdota_id": 726228,
+      "logo_id": "845963870798027729",
+      "region": "cn"
+    },
+    {
+      "name": "Virtus.pro",
+      "tag": "VP",
+      "datdota_id": 1883502,
+      "logo_id": "1817743268965791080",
+      "region": "eeu"
+    },
+    {
+      "name": "Elephant",
+      "tag": "Elephant",
+      "datdota_id": 8204512,
+      "logo_id": "1660101892780174189",
+      "region": "cn"
+    },
+    {
+      "name": "Team Aster",
+      "tag": "Aster",
+      "datdota_id": 6209166,
+      "logo_id": "1001430487518930631",
+      "region": "cn"
+    },
+    {
+      "name": "INVICTUS GAMING",
+      "tag": "iG",
+      "datdota_id": 5,
+      "logo_id": "975479762873971573",
+      "region": "cn"
+    },
+    {
+      "name": "Team Spirit",
+      "tag": "TSpirit",
+      "datdota_id": 7119388,
+      "logo_id": "1773822957617535601",
+      "region": "eeu"
+    },
+    {
+      "name": "OG",
+      "tag": "OG",
+      "datdota_id": 2586976,
+      "logo_id": "862855679982708969",
+      "region": "weu"
+    },
+    {
+      "name": "Quincy Crew",
+      "tag": "QCY",
+      "datdota_id": 7390454,
+      "logo_id": "1673617129954032824",
+      "region": "na"
+    },
+    {
+      "name": "Undying",
+      "tag": "UND",
+      "datdota_id": 8260983,
+      "logo_id": "1692775701318704753",
+      "region": "na"
+    },
+    {
+      "name": "T1",
+      "tag": "T1",
+      "datdota_id": 8214850,
+      "logo_id": "1658977260140178019",
+      "region": "sea"
+    },
+    {
+      "name": "Alliance",
+      "tag": "Alliance",
+      "datdota_id": 111474,
+      "logo_id": "255967725890131816",
+      "region": "weu"
+    },
+    {
+      "name": "beastcoast",
+      "tag": "bc",
+      "datdota_id": 8254400,
+      "logo_id": "1664609440937553639",
+      "region": "sa"
+    },
+    {
+      "name": "Fnatic",
+      "tag": "Fnatic",
+      "datdota_id": 350190,
+      "logo_id": "772866954983282781",
+      "region": "sea"
+    },
+    {
+      "name": "Thunder Predator",
+      "tag": "ThunderP",
+      "datdota_id": 7391077,
+      "logo_id": "1684898053518612571",
+      "region": "sa"
+    },
+    {
+      "name": "SG esports",
+      "tag": "SG",
+      "datdota_id": 8255756,
+      "logo_id": "1662356550778267512",
+      "region": "sa"
+    }
+  ]
+}
