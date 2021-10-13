@@ -29,7 +29,7 @@
                    class="table table-dark table-sm text-center"
                    data-toggle="table"
                    data-sortable="true"
-                   data-sort-name="_1st"
+                   data-sort-name="expected_earnings"
                    data-sort-order="desc"
                    data-search="true"
                    style="width: 99%;"
@@ -64,6 +64,10 @@
                     </th>
                     <th data-field="_17-18th" data-formatter="percentFormatter" data-cell-style="gradientStyler2"
                         data-sortable="true">17-18th
+                    </th>
+                    <th data-field="expected_earnings"
+                        data-formatter="dollarFormatter" data-cell-style="dollarStyler"
+                        data-sortable="true">Expected Earnings
                     </th>
                 </tr>
                 </thead>
@@ -153,6 +157,15 @@
 
     function percentFormatter(value, row) {
         return (Math.round(value * 10000) / 100).toFixed(2) + "%";
+    }
+
+    function dollarFormatter(value, row) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+        // return "$" + .toFixed(0) + "";
+    }
+
+    function dollarStyler(value, row, index) {
+        return gradientStyler(value, row, index, 5000000);
     }
 
     function gradientStyler1(value, row, index) {
@@ -256,9 +269,14 @@
                                 blob[field] = t[field];
                             });
 
+                            let ee = 0.0;
                             Object.keys(prize_percent).forEach(function (place) {
-                                blob["_" + place] = (prediction['team_outcomes'][t.name][place] / prediction['iterations']);
+                                let odd = (prediction['team_outcomes'][t.name][place] / prediction['iterations'])
+                                blob["_" + place] = odd;
+                                ee += prize_pool * odd * prize_percent[place];
+
                             })
+                            blob.expected_earnings = ee;
 
                             table_data.push(blob);
                         })
@@ -326,6 +344,7 @@
         }
 
         function render_outcomes_table(table_data) {
+            console.log(table_data);
             $('#table-outcomes').bootstrapTable('load', table_data);
         }
 
